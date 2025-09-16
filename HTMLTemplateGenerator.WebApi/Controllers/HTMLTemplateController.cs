@@ -1,4 +1,5 @@
 ﻿using HTMLTemlateGenerator.Domain;
+using HTMLTemplateGenerator.Application;
 using HTMLTemplateGenerator.Application.RepositoriesContracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,31 +21,147 @@ namespace HTMLTemplateGenerator.WebApi.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<HTMLTemplate>> GetHTMLTemplateById(Guid id)
         {
-            return Ok("aaaa");
+            if(id == Guid.Empty)
+            {
+                _logger.LogError("Id is empty");
+                return BadRequest("Id cannot be empty");
+            }
+
+            Result<HTMLTemplate> result = await _htmlRepository.GetByIdAsync(id);
+
+            if(result.StatusCode == 404)
+            {
+                _logger.LogError("Template not found");
+                return NotFound("Template not found");
+            }
+
+            if(!result.IsSuccess)
+            {
+                _logger.LogError(result.ErrorMessage);
+                return StatusCode(result.StatusCode, result.ErrorMessage);
+            }
+
+            _logger.LogInformation("Template retrieved successfully");
+            return Ok(result.Value);
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HTMLTemplate>>> GetHTMlTemplates()
         {
-            return Ok("aaaa");
+            Result<IEnumerable<HTMLTemplate>> result = await _htmlRepository.GetAllTemplatesAsync();
+
+            if(!result.IsSuccess)
+            {
+                _logger.LogError(result.ErrorMessage);
+                return StatusCode(result.StatusCode, result.ErrorMessage);
+            }
+
+            _logger.LogInformation("Templates retrieved successfully");
+            return Ok(result.Value);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateHTMLTemplate(HTMLTemplate htmlTemplate)
         {
-            return Ok("aaaa");
+            if(htmlTemplate == null)
+            {
+                _logger.LogError("Template is null");
+                return BadRequest("Template cannot be null");
+            }
+
+            if(string.IsNullOrEmpty(htmlTemplate.Name))
+            {
+                _logger.LogError("Template name is empty");
+                return BadRequest("Name cannot be empty");
+            }
+
+            if(string.IsNullOrEmpty(htmlTemplate.HTMLContent))
+            {
+                _logger.LogError("Template content is empty");
+                return BadRequest("HTML content cannot be empty");
+            }
+
+            Result result = await _htmlRepository.CreateTemplateAsync(htmlTemplate);
+
+            if(!result.IsSuccess)
+            {
+                _logger.LogError(result.ErrorMessage);
+                return StatusCode(result.StatusCode, result.ErrorMessage);
+            }
+
+            _logger.LogInformation("Template created successfully");
+            return Created(string.Empty, "Created");
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteHTMLTemplate(Guid id)
         {
-            return Ok("aaaa");
+            if(id == Guid.Empty)
+            {
+                _logger.LogError("Id ca not be empty");
+                return BadRequest("Id cannot be empty");
+            }
+
+            Result result = await _htmlRepository.DeleteTemplateAsync(id);
+
+            if(result.StatusCode == 404)
+            {
+                _logger.LogError("Template not found");
+                return NotFound("Template not found");
+            }
+
+            if (!result.IsSuccess)
+            {
+                _logger.LogError(result.ErrorMessage);
+                return StatusCode(result.StatusCode, result.ErrorMessage);
+            }
+
+            return Ok();
         }
 
         [HttpPut]
         public async Task<IActionResult> UpdateHTMLTemplate(HTMLTemplate htmlTemplate)
         {
-            return Ok("aaaa");
+            if(htmlTemplate == null)
+            {
+                _logger.LogError("Template is null");
+                return BadRequest("Template cannot be null");
+            }
+
+            if(htmlTemplate.Id == Guid.Empty)
+            {
+               _logger.LogError("Template id is empty");
+                return BadRequest("Id cannot be empty");
+            }
+
+            if(string.IsNullOrEmpty(htmlTemplate.Name))
+            {
+                _logger.LogError("Template name is empty");
+                return BadRequest("Name cannot be empty");
+            }
+
+            if(string.IsNullOrEmpty(htmlTemplate.HTMLContent))
+            {
+                _logger.LogError("Template content is empty");
+                return BadRequest("HTML content cannot be empty");
+            }
+
+            Result result = await _htmlRepository.UpdateTemplateAsync(htmlTemplate);
+
+            if(result.StatusCode == 404)
+            {
+                _logger.LogError("Template not found");
+                return NotFound("Template not found");
+            }
+
+            if (!result.IsSuccess)
+            {
+                _logger.LogError(result.ErrorMessage);
+                return StatusCode(result.StatusCode, result.ErrorMessage);
+            }
+
+            _logger.LogInformation("Template updated successfully");
+            return Ok();
         }
     }
 }

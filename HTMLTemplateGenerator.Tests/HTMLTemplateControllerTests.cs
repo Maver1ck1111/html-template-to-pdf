@@ -23,11 +23,18 @@ namespace HTMLTemplateGenerator.Tests
 
             var controller = new HTMLTemplateController(_mockLogger.Object, _mockRepository.Object);
 
-            var result = await controller.CreateHTMLTemplate(new HTMLTemplate());
+            HTMLTemplate template = new HTMLTemplate
+            {
+                Id = Guid.NewGuid(),
+                Name = "Test name",
+                HTMLContent = "<html></html>"
+            };
 
-            result.Should().BeOfType<OkObjectResult>();
+            var result = await controller.CreateHTMLTemplate(template);
 
-            var response = result.As<OkObjectResult>();
+            result.Should().BeOfType<CreatedResult>();
+
+            var response = result.As<CreatedResult>();
 
             response.StatusCode.Should().Be(201);
             response.Value.Should().Be("Created");
@@ -81,7 +88,14 @@ namespace HTMLTemplateGenerator.Tests
 
             var controller = new HTMLTemplateController(_mockLogger.Object, _mockRepository.Object);
 
-            var result = await controller.CreateHTMLTemplate(new HTMLTemplate());
+            HTMLTemplate template = new HTMLTemplate
+            {
+                Id = Guid.NewGuid(),
+                Name = "Test name",
+                HTMLContent = "<html></html>"
+            };
+
+            var result = await controller.CreateHTMLTemplate(template);
 
             result.Should().BeOfType<ObjectResult>();
             var response = result.As<ObjectResult>();
@@ -230,12 +244,11 @@ namespace HTMLTemplateGenerator.Tests
 
             var result = await controller.DeleteHTMLTemplate(Guid.NewGuid());
 
-            result.Should().BeOfType<OkObjectResult>();
+            result.Should().BeOfType<OkResult>();
 
-            var response = result.As<OkObjectResult>();
+            var response = result.As<OkResult>();
 
             response.StatusCode.Should().Be(200);
-            response.Value.Should().Be("Deleted");
         }
 
         [Fact]
@@ -295,14 +308,20 @@ namespace HTMLTemplateGenerator.Tests
 
             var controller = new HTMLTemplateController(_mockLogger.Object, _mockRepository.Object);
 
-            var result = await controller.UpdateHTMLTemplate(new HTMLTemplate());
+            HTMLTemplate template = new HTMLTemplate
+            {
+                Id = Guid.NewGuid(),
+                Name = "Test name",
+                HTMLContent = "<html></html>"
+            };
 
-            result.Should().BeOfType<OkObjectResult>();
+            var result = await controller.UpdateHTMLTemplate(template);
 
-            var response = result.As<OkObjectResult>();
+            result.Should().BeOfType<OkResult>();
+
+            var response = result.As<OkResult>();
 
             response.StatusCode.Should().Be(200);
-            response.Value.Should().Be("Updated");
         }
 
         [Fact]
@@ -374,7 +393,14 @@ namespace HTMLTemplateGenerator.Tests
 
             var controller = new HTMLTemplateController(_mockLogger.Object, _mockRepository.Object);
 
-            var result = await controller.UpdateHTMLTemplate(new HTMLTemplate());
+            HTMLTemplate template = new HTMLTemplate
+            {
+                Id = Guid.NewGuid(),
+                Name = "Test name",
+                HTMLContent = "<html></html>"
+            };
+
+            var result = await controller.UpdateHTMLTemplate(template);
 
             result.Should().BeOfType<ObjectResult>();
             var response = result.As<ObjectResult>();
