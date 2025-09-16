@@ -163,5 +163,11 @@ namespace HTMLTemplateGenerator.WebApi.Controllers
             _logger.LogInformation("Template updated successfully");
             return Ok();
         }
+
+        [HttpPost("{id:guid}")]
+        public async Task<IActionResult> CreatePdfFile([FromQuery] Guid id, [FromBody] Dictionary<string, string> htmlVlues)
+        {
+            return Ok();
+        }
     }
 }

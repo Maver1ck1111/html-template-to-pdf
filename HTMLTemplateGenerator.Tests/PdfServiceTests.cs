@@ -25,7 +25,12 @@ namespace HTMLTemplateGenerator.Tests
             {
                 Id = Guid.NewGuid(),
                 Name = "Test Template",
-                HTMLContent = "<html><body><h1>Hello, World!</h1></body></html>"
+                HTMLContent = "<html><body><h1>Hello, {{World}}!</h1></body></html>"
+            };
+
+            Dictionary<string, string> content = new Dictionary<string, string>
+            {
+                { "World", "PDF" }
             };
 
             _mockHtmlRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>()))
@@ -33,7 +38,7 @@ namespace HTMLTemplateGenerator.Tests
 
             var service = new PdfService(_mockLogger.Object, _mockHtmlRepository.Object);
 
-            var result = await service.ConvertHtmlToPdfAsync(template.Id);
+            var result = await service.ConvertHtmlToPdfAsync(template.Id, content);
 
             result.StatusCode.Should().Be(200);
             result.Value.Should().NotBeNull();
@@ -54,7 +59,7 @@ namespace HTMLTemplateGenerator.Tests
 
             var service = new PdfService(_mockLogger.Object, _mockHtmlRepository.Object);
 
-            var result = await service.ConvertHtmlToPdfAsync(Guid.NewGuid());
+            var result = await service.ConvertHtmlToPdfAsync(Guid.NewGuid(), new Dictionary<string, string>());
 
             result.StatusCode.Should().Be(404);
             result.IsSuccess.Should().BeFalse();
@@ -68,7 +73,7 @@ namespace HTMLTemplateGenerator.Tests
 
             var service = new PdfService(_mockLogger.Object, _mockHtmlRepository.Object);
 
-            var result = await service.ConvertHtmlToPdfAsync(Guid.NewGuid());
+            var result = await service.ConvertHtmlToPdfAsync(Guid.NewGuid(), new Dictionary<string, string>());
 
             result.StatusCode.Should().Be(500);
             result.IsSuccess.Should().BeFalse();
@@ -79,7 +84,7 @@ namespace HTMLTemplateGenerator.Tests
         {
             var service = new PdfService(_mockLogger.Object, _mockHtmlRepository.Object);
 
-            var result = await service.ConvertHtmlToPdfAsync(Guid.Empty);
+            var result = await service.ConvertHtmlToPdfAsync(Guid.Empty, new Dictionary<string, string>());
 
             result.StatusCode.Should().Be(400);
             result.IsSuccess.Should().BeFalse();

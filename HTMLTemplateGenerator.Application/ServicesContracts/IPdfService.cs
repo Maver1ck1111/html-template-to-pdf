@@ -8,6 +8,6 @@ namespace HTMLTemplateGenerator.Application.ServicesContracts
 {
     public interface IPdfService
     {
-        Task<Result<(byte[], string)>> ConvertHtmlToPdfAsync(Guid templateId);
+        Task<Result<(byte[], string)>> ConvertHtmlToPdfAsync(Guid templateId, Dictionary<string, string> content);
     }
 }

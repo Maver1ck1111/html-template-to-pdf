@@ -23,7 +23,7 @@ namespace HTMLTemplateGenerator.Application.Services
             _logger = logger;
             _htmlRepository = hTMLRepository;
         }
-        public async Task<Result<(byte[], string)>> ConvertHtmlToPdfAsync(Guid templateId)
+        public async Task<Result<(byte[], string)>> ConvertHtmlToPdfAsync(Guid templateId, Dictionary<string, string> content)
         {
             if(templateId == Guid.Empty)
             {
@@ -39,13 +39,23 @@ namespace HTMLTemplateGenerator.Application.Services
                 return Result<(byte[], string)>.Failure(templateResult.StatusCode, templateResult.ErrorMessage);
             }
 
+            Result<string> addingResult =  SetValuesIntoHTML(templateResult.Value.HTMLContent, content);
+
+            if(!addingResult.IsSuccess)
+            {
+                _logger.LogError(addingResult.ErrorMessage);
+                return Result<(byte[], string)>.Failure(addingResult.StatusCode, addingResult.ErrorMessage);
+            }
+
+            string html = addingResult.Value;
+
             byte[] pdfBytes;
 
             try
             {
                 IBrowser browser = await GetBrowserAsync();
                 using var page = await browser.NewPageAsync();
-                await page.SetContentAsync(templateResult.Value.HTMLContent);
+                await page.SetContentAsync(html);
 
                 pdfBytes = await page.PdfDataAsync(new PdfOptions { Format = PaperFormat.A4 });
             }
@@ -70,6 +80,27 @@ namespace HTMLTemplateGenerator.Application.Services
             }
 
             return _browser;
+        }
+
+        private Result<string> SetValuesIntoHTML(string html, Dictionary<string, string> content)
+        {
+            var matches = System.Text.RegularExpressions.Regex.Matches(html, @"\{\{(\w+)\}\}");
+
+            foreach (System.Text.RegularExpressions.Match match in matches)
+            {
+                string placeholder = match.Groups[1].Value;
+
+                if (content.TryGetValue(placeholder, out var value))
+                {
+                    html = html.Replace(match.Value, value);
+                }
+                else
+                {
+                    return Result<string>.Failure(400, $"Missing value for placeholder '{placeholder}'");
+                }
+            }
+
+            return Result<string>.Success(html, 200);
         }
     }
 }
