@@ -41,7 +41,7 @@ namespace HTMLTemplateGenerator.Tests
 
             result.StatusCode.Should().Be(201);
 
-            var createdTemplate = await context.HTMLTemplates.FindAsync(template.Id);
+            var createdTemplate = await context.HTMLTemplate.FindAsync(template.Id);
 
             createdTemplate.Should().NotBeNull();
             createdTemplate.Name.Should().Be(template.Name);
@@ -138,7 +138,7 @@ namespace HTMLTemplateGenerator.Tests
                 HTMLContent = "<html><body><h1>Hello, World!</h1></body></html>"
             };
 
-            context.HTMLTemplates.Add(template);
+            context.HTMLTemplate.Add(template);
             await context.SaveChangesAsync();
 
             var repository = new HTMLRepository(_mockLogger.Object, context);
@@ -211,8 +211,8 @@ namespace HTMLTemplateGenerator.Tests
                 HTMLContent = "<html><body><h1>Hello, Universe!</h1></body></html>"
             };
 
-            context.HTMLTemplates.Add(template1);
-            context.HTMLTemplates.Add(template2);
+            context.HTMLTemplate.Add(template1);
+            context.HTMLTemplate.Add(template2);
             await context.SaveChangesAsync();
 
             var repository = new HTMLRepository(_mockLogger.Object, context);
@@ -257,7 +257,7 @@ namespace HTMLTemplateGenerator.Tests
                 HTMLContent = "<html><body><h1>Hello, World!</h1></body></html>"
             };
 
-            context.HTMLTemplates.Add(template);
+            context.HTMLTemplate.Add(template);
             await context.SaveChangesAsync();
 
             var repository = new HTMLRepository(_mockLogger.Object, context);
@@ -266,7 +266,7 @@ namespace HTMLTemplateGenerator.Tests
 
             result.StatusCode.Should().Be(200);
 
-            var deletedTemplate = await context.HTMLTemplates.FindAsync(template.Id);
+            var deletedTemplate = await context.HTMLTemplate.FindAsync(template.Id);
 
             deletedTemplate.Should().BeNull();
         }
@@ -325,7 +325,7 @@ namespace HTMLTemplateGenerator.Tests
                 HTMLContent = "<html><body><h1>Hello, World!</h1></body></html>"
             };
 
-            context.HTMLTemplates.Add(template);
+            context.HTMLTemplate.Add(template);
             await context.SaveChangesAsync();
 
             template.Name = "Updated Template";
@@ -335,7 +335,7 @@ namespace HTMLTemplateGenerator.Tests
             var result = await repository.UpdateTemplateAsync(template);
             result.StatusCode.Should().Be(200);
 
-            var updatedTemplate = await context.HTMLTemplates.FindAsync(template.Id);
+            var updatedTemplate = await context.HTMLTemplate.FindAsync(template.Id);
             updatedTemplate.Should().NotBeNull();
             updatedTemplate.Name.Should().Be("Updated Template");
         }

@@ -44,7 +44,7 @@ namespace HTMLTemlateGenerator.Infrastructure
 
             try
             {
-                await _context.HTMLTemplates.AddAsync(template);
+                await _context.HTMLTemplate.AddAsync(template);
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -67,14 +67,14 @@ namespace HTMLTemlateGenerator.Infrastructure
 
             try
             {
-                HTMLTemplate? template = await _context.HTMLTemplates.FindAsync(id);
+                HTMLTemplate? template = await _context.HTMLTemplate.FindAsync(id);
                 if(template == null)
                 {
                     _logger.LogError("Can not find account in DeleteTemplateAsync");
                     return Result.Failure("Template not found", 404);
                 }
 
-                _context.HTMLTemplates.Remove(template);
+                _context.HTMLTemplate.Remove(template);
                 await _context.SaveChangesAsync();
             } catch(Exception ex)
             {
@@ -91,7 +91,7 @@ namespace HTMLTemlateGenerator.Infrastructure
             IEnumerable<HTMLTemplate> templates;
             try
             {
-                templates = await _context.HTMLTemplates.ToListAsync();
+                templates = await _context.HTMLTemplate.ToListAsync();
             } catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while retrieving templates");
@@ -114,7 +114,7 @@ namespace HTMLTemlateGenerator.Infrastructure
 
             try
             {
-                template = await _context.HTMLTemplates.FindAsync(id);
+                template = await _context.HTMLTemplate.FindAsync(id);
                 if(template == null)
                 {
                     _logger.LogError("Can not find account in GetByIdAsync");
@@ -154,7 +154,7 @@ namespace HTMLTemlateGenerator.Infrastructure
 
             try
             {
-                currentTemplate = await _context.HTMLTemplates.FindAsync(template.Id);
+                currentTemplate = await _context.HTMLTemplate.FindAsync(template.Id);
                 if (currentTemplate == null) 
                 {
                     _logger.LogError("Can not find account in UpdateTemplateAsync");
@@ -163,7 +163,7 @@ namespace HTMLTemlateGenerator.Infrastructure
 
                 currentTemplate.Name = template.Name;
                 currentTemplate.HTMLContent = template.HTMLContent;
-                _context.HTMLTemplates.Update(currentTemplate);
+                _context.HTMLTemplate.Update(currentTemplate);
                 await _context.SaveChangesAsync();
 
             } catch (Exception ex)

@@ -4,7 +4,12 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DbHostName": "localhost",
+        "DbPort": "5432",
+        "DbName": "HTMLTemlpates",
+        "DbUserName": "postgres",
+        "DbPassword": "1234"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5231"

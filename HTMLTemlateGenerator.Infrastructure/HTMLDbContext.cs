@@ -13,6 +13,6 @@ namespace HTMLTemlateGenerator.Infrastructure
         public HTMLDbContext(DbContextOptions<HTMLDbContext> options): base(options)
         { }
 
-        public DbSet<HTMLTemplate> HTMLTemplates { get; set; } = null!;
+        public DbSet<HTMLTemplate> HTMLTemplate { get; set; } = null!;
     }
 }
