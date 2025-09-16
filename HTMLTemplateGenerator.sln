@@ -5,6 +5,19 @@ VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HTMLTemplateGenerator.WebApi", "HTMLTemplateGenerator.WebApi\HTMLTemplateGenerator.WebApi.csproj", "{04E9E362-2399-4A26-9B39-6C604C66FDB2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения", "Элементы решения", "{2FC2E229-04F0-4C6B-9BE8-59DF531EB4D4}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HTMLTemplateGenerator.Application", "HTMLTemplateGenerator.Application\HTMLTemplateGenerator.Application.csproj", "{3E2FA9D7-9ABD-4D6F-A6D3-75B627E82C9B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HTMLTemlateGenerator.Domain", "HTMLTemlateGenerator.Domain\HTMLTemlateGenerator.Domain.csproj", "{90CC2720-825B-4B2F-BE91-C8A6F604FACF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HTMLTemlateGenerator.Infrastructure", "HTMLTemlateGenerator.Infrastructure\HTMLTemlateGenerator.Infrastructure.csproj", "{60C2F1F1-A2AA-4944-8284-EBB60893C212}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HTMLTemplateGenerator.Tests", "HTMLTemplateGenerator.Tests\HTMLTemplateGenerator.Tests.csproj", "{400DC5C0-EC44-423E-AA8D-B1406F284BDB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +28,22 @@ Global
 		{04E9E362-2399-4A26-9B39-6C604C66FDB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04E9E362-2399-4A26-9B39-6C604C66FDB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04E9E362-2399-4A26-9B39-6C604C66FDB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E2FA9D7-9ABD-4D6F-A6D3-75B627E82C9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E2FA9D7-9ABD-4D6F-A6D3-75B627E82C9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E2FA9D7-9ABD-4D6F-A6D3-75B627E82C9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E2FA9D7-9ABD-4D6F-A6D3-75B627E82C9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90CC2720-825B-4B2F-BE91-C8A6F604FACF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90CC2720-825B-4B2F-BE91-C8A6F604FACF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90CC2720-825B-4B2F-BE91-C8A6F604FACF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90CC2720-825B-4B2F-BE91-C8A6F604FACF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60C2F1F1-A2AA-4944-8284-EBB60893C212}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60C2F1F1-A2AA-4944-8284-EBB60893C212}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60C2F1F1-A2AA-4944-8284-EBB60893C212}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60C2F1F1-A2AA-4944-8284-EBB60893C212}.Release|Any CPU.Build.0 = Release|Any CPU
+		{400DC5C0-EC44-423E-AA8D-B1406F284BDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{400DC5C0-EC44-423E-AA8D-B1406F284BDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{400DC5C0-EC44-423E-AA8D-B1406F284BDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{400DC5C0-EC44-423E-AA8D-B1406F284BDB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

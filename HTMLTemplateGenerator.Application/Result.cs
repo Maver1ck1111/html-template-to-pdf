@@ -13,5 +13,6 @@ namespace HTMLTemplateGenerator.Application
         public int StatusCode { get; set; }
 
         public static Result Success(int statusCode = 200) => new Result { StatusCode = statusCode };
+        public static Result Failure(string errorMessage, int statusCode) => new Result { ErrorMessage = errorMessage, StatusCode = statusCode };
     }
 }

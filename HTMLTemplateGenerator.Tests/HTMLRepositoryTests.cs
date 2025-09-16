@@ -35,14 +35,11 @@ namespace HTMLTemplateGenerator.Tests
                 HTMLContent = "<html><body><h1>Hello, World!</h1></body></html>"
             };
 
-            context.HTMLTemplates.Add(template);
-            await context.SaveChangesAsync();
-
             var repository = new HTMLRepository(_mockLogger.Object, context);
 
             var result = await repository.CreateTemplateAsync(template);
 
-            result.StatusCode.Should().Be(200);
+            result.StatusCode.Should().Be(201);
 
             var createdTemplate = await context.HTMLTemplates.FindAsync(template.Id);
 
@@ -104,7 +101,7 @@ namespace HTMLTemplateGenerator.Tests
             var result = await repository.CreateTemplateAsync(template);
 
             result.StatusCode.Should().Be(400);
-            result.ErrorMessage.Should().Be("HTML content cannot be empty");
+            result.ErrorMessage.Should().Be("Name cannot be empty");
         }
 
         [Fact]
@@ -124,7 +121,7 @@ namespace HTMLTemplateGenerator.Tests
             var result = await repository.CreateTemplateAsync(template);
 
             result.StatusCode.Should().Be(500);
-            result.ErrorMessage.Should().Be("An error occurred while creating the template.");
+            result.ErrorMessage.Should().Be("An error occurred while creating the template");
         }
         #endregion
 
