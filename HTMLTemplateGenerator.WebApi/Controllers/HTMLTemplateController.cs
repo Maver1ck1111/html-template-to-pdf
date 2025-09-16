@@ -1,6 +1,7 @@
 ﻿using HTMLTemlateGenerator.Domain;
 using HTMLTemplateGenerator.Application;
 using HTMLTemplateGenerator.Application.RepositoriesContracts;
+using HTMLTemplateGenerator.Application.ServicesContracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -164,10 +165,45 @@ namespace HTMLTemplateGenerator.WebApi.Controllers
             return Ok();
         }
 
-        [HttpPost("{id:guid}")]
-        public async Task<IActionResult> CreatePdfFile([FromQuery] Guid id, [FromBody] Dictionary<string, string> htmlVlues)
+        [HttpPost("createpdf/{id:guid}")]
+        public async Task<IActionResult> CreatePdfFile([FromRoute] Guid id, [FromBody] Dictionary<string, string> htmlValues, [FromServices] IPdfService pdfService)
         {
-            return Ok();
+            if(id == Guid.Empty)
+            {
+                _logger.LogError("Id is empty");
+                return BadRequest("Template ID cannot be empty");
+            }
+
+            if(htmlValues == null)
+            {
+                _logger.LogError("Content is null");
+                return BadRequest("Content cannot be null");
+            }
+
+            Result<(byte[], string)> result = await pdfService.ConvertHtmlToPdfAsync(id, htmlValues);
+
+            if(result.StatusCode == 404)
+            {
+                _logger.LogError("Template not found");
+                return NotFound("Template not found");
+            }
+
+            if(result.StatusCode == 400)
+            {
+                _logger.LogError(result.ErrorMessage);
+                return BadRequest(result.ErrorMessage);
+            }   
+
+            if(!result.IsSuccess)
+            {
+                _logger.LogError(result.ErrorMessage);
+                return StatusCode(result.StatusCode, result.ErrorMessage);
+            }
+
+            var (pdfBytes, fileName) = result.Value;
+
+            _logger.LogInformation("File created successfully");
+            return File(pdfBytes, "application/pdf", $"{fileName}.pdf");
         }
     }
 }

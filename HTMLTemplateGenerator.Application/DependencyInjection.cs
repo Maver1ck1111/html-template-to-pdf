@@ -9,7 +9,7 @@ namespace HTMLTemplateGenerator.Application
     {
         public static IServiceCollection ApplicationDependencies(this IServiceCollection service)
         {
-            service.AddSingleton<IPdfService, PdfService>();
+            service.AddScoped<IPdfService, PdfService>();
             return service;
         }
     }

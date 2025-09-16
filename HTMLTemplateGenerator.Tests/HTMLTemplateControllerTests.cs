@@ -2,6 +2,7 @@
 using HTMLTemlateGenerator.Domain;
 using HTMLTemplateGenerator.Application;
 using HTMLTemplateGenerator.Application.RepositoriesContracts;
+using HTMLTemplateGenerator.Application.ServicesContracts;
 using HTMLTemplateGenerator.WebApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -13,6 +14,7 @@ namespace HTMLTemplateGenerator.Tests
     {
         private readonly Mock<ILogger<HTMLTemplateController>> _mockLogger = new Mock<ILogger<HTMLTemplateController>>();
         private readonly Mock<IHTMLRepository> _mockRepository = new Mock<IHTMLRepository>();
+        private readonly Mock<IPdfService> _mockPdfService = new Mock<IPdfService>();
 
         #region CreateHTMLTemplate
         [Fact]
@@ -407,6 +409,132 @@ namespace HTMLTemplateGenerator.Tests
 
             response.StatusCode.Should().Be(500);
             response.Value.Should().Be("An error occurred while updating the template");
+        }
+        #endregion
+
+        #region CreatePdfFile
+        [Fact]
+        public async Task CreatePdfFile_ShouldReturnCorrectResponse()
+        {
+            var pdfContent = (new byte[] { 37, 80, 68, 70, 45 }, "Test name");
+
+            _mockRepository.Setup(repo => repo.GetByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(Result<HTMLTemplate>.Success(new HTMLTemplate
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Test name",
+                    HTMLContent = "<html><body><h1>{{Title}}</h1></body></html>"
+                }, 200));
+
+            _mockPdfService.Setup(service => service.ConvertHtmlToPdfAsync(It.IsAny<Guid>(), It.IsAny<Dictionary<string, string>>()))
+                .ReturnsAsync(Result<(byte[], string)>.Success(pdfContent, 200));
+
+            var controller = new HTMLTemplateController(_mockLogger.Object, _mockRepository.Object);
+
+            var content = new Dictionary<string, string>
+            {
+                { "Title", "Hello, World!" }
+            };
+
+            var result = await controller.CreatePdfFile(Guid.NewGuid(), content, _mockPdfService.Object);
+
+            result.Should().BeOfType<FileContentResult>();
+
+            var response = result.As<FileContentResult>();
+
+            response.Should().NotBeNull();
+            response.FileContents.Should().BeEquivalentTo(pdfContent.Item1);
+            response.ContentType.Should().Be("application/pdf");
+            response.FileDownloadName.Should().Be("Test name.pdf");
+        }
+
+        [Fact]
+        public async Task CreatePdfFile_ShouldReturn404NotFound_WhenTemplateDoesNotExist()
+        {
+            _mockRepository.Setup(repo => repo.GetByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(Result<HTMLTemplate>.Failure(404, "Template not found"));
+
+            var controller = new HTMLTemplateController(_mockLogger.Object, _mockRepository.Object);
+
+            _mockPdfService.Setup(service => service.ConvertHtmlToPdfAsync(It.IsAny<Guid>(), It.IsAny<Dictionary<string, string>>()))
+                .ReturnsAsync(Result<(byte[], string)>.Failure(404, "Template not found"));
+
+            var result = await controller.CreatePdfFile(Guid.NewGuid(), new Dictionary<string, string>(), _mockPdfService.Object);
+
+            result.Should().BeOfType<NotFoundObjectResult>();
+            var response = result.As<NotFoundObjectResult>();
+
+            response.StatusCode.Should().Be(404);
+            response.Value.Should().Be("Template not found");
+        }
+
+        [Fact]
+        public async Task CreatePdfFile_ShouldReturn500InternalServerError_WhenPdfServiceFails()
+        {
+            _mockRepository.Setup(repo => repo.GetByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(Result<HTMLTemplate>.Success(new HTMLTemplate
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Test name",
+                    HTMLContent = "<html><body><h1>{{Title}}</h1></body></html>"
+                }, 200));
+
+            _mockPdfService.Setup(service => service.ConvertHtmlToPdfAsync(It.IsAny<Guid>(), It.IsAny<Dictionary<string, string>>()))
+                .ReturnsAsync(Result<(byte[], string)>.Failure(500, "An error occurred while generating the PDF"));
+
+            var controller = new HTMLTemplateController(_mockLogger.Object, _mockRepository.Object);
+
+            var result = await controller.CreatePdfFile(Guid.NewGuid(), new Dictionary<string, string>(), _mockPdfService.Object);
+
+            result.Should().BeOfType<ObjectResult>();
+            var response = result.As<ObjectResult>();
+
+            response.StatusCode.Should().Be(500);
+            response.Value.Should().Be("An error occurred while generating the PDF");
+        }
+
+        [Fact]
+        public async Task CreatePdfFile_ShouldReturn400BadRequest_WhenIdIsEmpty()
+        {
+            var controller = new HTMLTemplateController(_mockLogger.Object, _mockRepository.Object);
+
+            var result = await controller.CreatePdfFile(Guid.Empty, new Dictionary<string, string>(), _mockPdfService.Object);
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            var response = result.As<BadRequestObjectResult>();
+
+            response.StatusCode.Should().Be(400);
+            response.Value.Should().Be("Template ID cannot be empty");
+        }
+
+        [Fact]
+        public async Task CreatePdfFile_ShouldReturn400BadRequest_WhenContentIsNull()
+        {
+            var controller = new HTMLTemplateController(_mockLogger.Object, _mockRepository.Object);
+
+            var result = await controller.CreatePdfFile(Guid.NewGuid(), null, _mockPdfService.Object);
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            var response = result.As<BadRequestObjectResult>();
+
+            response.StatusCode.Should().Be(400);
+            response.Value.Should().Be("Content cannot be null");
+        }
+
+        [Fact]
+        public async Task CreatePdfFile_ShouldReturn400BadRequest_WhenSomevalueIsMissingInContent()
+        {
+            _mockPdfService.Setup(service => service.ConvertHtmlToPdfAsync(It.IsAny<Guid>(), It.IsAny<Dictionary<string, string>>()))
+                .ReturnsAsync(Result<(byte[], string)>.Failure(400, "Missing value for placeholder World"));
+
+            var controller = new HTMLTemplateController(_mockLogger.Object, _mockRepository.Object);
+
+            var result = await controller.CreatePdfFile(Guid.NewGuid(), new Dictionary<string, string>(), _mockPdfService.Object);
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            var response = result.As<BadRequestObjectResult>();
+            response.StatusCode.Should().Be(400);
+            response.Value.Should().Be("Missing value for placeholder World");
         }
         #endregion
     }
