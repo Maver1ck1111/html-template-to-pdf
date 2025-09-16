@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,11 +19,10 @@ namespace HTMLTemlateGenerator.Infrastructure
             connectionString += "Username: " + Environment.GetEnvironmentVariable("DbUserName")+ "; ";
             connectionString += "Password: " + Environment.GetEnvironmentVariable("DbPassword")+ "; ";
 
-
             service.AddDbContext<HTMLDbContext>(options =>
             {
                 options.UseNpgsql(connectionString);
-            })
+            });
 
             return service;
         }
