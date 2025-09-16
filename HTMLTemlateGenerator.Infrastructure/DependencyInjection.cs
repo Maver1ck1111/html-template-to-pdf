@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HTMLTemplateGenerator.Application.RepositoriesContracts;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,8 @@ namespace HTMLTemlateGenerator.Infrastructure
             {
                 options.UseNpgsql(connectionString);
             });
+
+            service.AddScoped<IHTMLRepository, HTMLRepository>();
 
             return service;
         }

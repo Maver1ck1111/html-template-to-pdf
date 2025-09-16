@@ -40,6 +40,8 @@ namespace HTMLTemlateGenerator.Infrastructure
                 return Result.Failure("HTML content cannot be empty", 400);
             }
 
+            template.Id = Guid.NewGuid();
+
             try
             {
                 await _context.HTMLTemplates.AddAsync(template);
